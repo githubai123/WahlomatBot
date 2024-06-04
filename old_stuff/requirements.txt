@@ -1,0 +1,7 @@
+crewai
+crewai[tools]
+langchain_openai
+streamlit
+PyPDF2
+requests
+
