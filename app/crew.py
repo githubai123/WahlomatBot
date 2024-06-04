@@ -154,13 +154,13 @@ def create_agents(topic):
     )
     summarize = Task(
         description=f"Summarise  the different positions in less than 500 words. And ask the participants on their counter or pro aruments to the different positions",
-        expected_output=f"consice summary of the different position",
+        expected_output=f"concise summary of the different position",
 
         agent=moderator
     )
     present_cdu_position_react = Task(
         description=f"React on the other participants arguments",
-        expected_output=f"consice reaction on the  over positions",
+        expected_output=f"concise reaction on the  over positions",
 
         agent=cdu_politician
     )
