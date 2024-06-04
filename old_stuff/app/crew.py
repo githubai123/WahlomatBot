@@ -9,8 +9,66 @@ model = ChatOpenAI(model_name="crewai-llama3:8b", temperature=0.7)
 
 # Define tools
 search_tool = SerperDevTool()
+pdf_cdu = PDFSearchTool(
+    pdf='data/CDU.pdf',
+    config=dict(
+        llm=dict(
+            provider="ollama",
+            config=dict(
+                model="crewai-llama3",
+                base_url="http://localhost:11434",  # Adjust the base URL as needed
+            ),
+        ),
+        embedder=dict(
+            provider="ollama",
+            config=dict(
+                model="nomic-embed-text",
+                base_url="http://localhost:11434",  # Adjust the base URL as needed
+            ),
+        ),
+    )
+)
 
 
+pdf_fdp = PDFSearchTool(
+    pdf='data/FDP.pdf',
+    config=dict(
+        llm=dict(
+            provider="ollama",
+            config=dict(
+                model="crewai-llama3",
+                base_url="http://localhost:11434",  # Adjust the base URL as needed
+            ),
+        ),
+        embedder=dict(
+            provider="ollama",
+            config=dict(
+                model="nomic-embed-text",
+                base_url="http://localhost:11434",  # Adjust the base URL as needed
+            ),
+        ),
+    )
+)
+
+pdf_Gruene = PDFSearchTool(
+    pdf='data/Gruene.pdf',
+    config=dict(
+        llm=dict(
+            provider="ollama",
+            config=dict(
+                model="crewai-llama3",
+                base_url="http://localhost:11434",  # Adjust the base URL as needed
+            ),
+        ),
+        embedder=dict(
+            provider="ollama",
+            config=dict(
+                model="nomic-embed-text",
+                base_url="http://localhost:11434",  # Adjust the base URL as needed
+            ),
+        ),
+    )
+)
 # Function to read PDF content
 def read_pdf(file_path):
     with open(file_path, 'rb') as f:
@@ -44,7 +102,7 @@ def create_agents(topic):
         conservative political party CDU. """,
         verbose=True,
         allow_delegation=False,
-        tools=[search_tool],  # No specific tools for now
+        tools=[pdf_cdu],  # No specific tools for now
         llm=model
     )
 
@@ -55,7 +113,7 @@ def create_agents(topic):
         backstory="""You are an politician with a strong ecological background. Your are a convinced environmentalist. """,
         verbose=True,
         allow_delegation=False,
-        tools=[search_tool],
+        tools=[pdf_Gruene],
         llm=model
     )
 
@@ -66,7 +124,7 @@ def create_agents(topic):
         backstory="""You are an politician with a strong background in finance and law.""",
         verbose=True,
         allow_delegation=False,
-        tools=[search_tool],
+        tools=[pdf_fdp],
         llm=model
     )
 
