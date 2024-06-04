@@ -1,82 +1,56 @@
 from crewai import Agent, Task, Crew
 from crewai_tools import SerperDevTool, PDFSearchTool
-
 from langchain_openai import ChatOpenAI
 from PyPDF2 import PdfReader
+import streamlit as st
+from dotenv import load_dotenv, find_dotenv
 
 # Define the language model
 model = ChatOpenAI(model_name="crewai-llama3:8b", temperature=0.7)
 
 # Define tools
 search_tool = SerperDevTool()
-pdf_cdu = PDFSearchTool(
-    pdf='data/CDU.pdf',
-    config=dict(
-        llm=dict(
-            provider="ollama",
-            config=dict(
-                model="crewai-llama3",
-                base_url="http://localhost:11434",  # Adjust the base URL as needed
+
+def create_pdf_tool(party):
+    pdf_tool = PDFSearchTool(
+        pdf=f'data/{party}.pdf',
+        config=dict(
+            llm=dict(
+                provider="ollama",
+                config=dict(
+                    model="crewai-llama3",
+                    base_url="http://localhost:11434",  # Adjust the base URL as needed
+                ),
             ),
-        ),
-        embedder=dict(
-            provider="ollama",
-            config=dict(
-                model="nomic-embed-text",
-                base_url="http://localhost:11434",  # Adjust the base URL as needed
+            embedder=dict(
+                provider="ollama",
+                config=dict(
+                    model="nomic-embed-text",
+                    base_url="http://localhost:11434",  # Adjust the base URL as needed
+                ),
             ),
-        ),
+        )
     )
-)
+    return pdf_tool
+
+pdf_tools = {}
+parties = ["CDU", "FDP"]
+for party in parties:
+    pdf_tools[party] = create_pdf_tool(party)
 
 
-pdf_fdp = PDFSearchTool(
-    pdf='data/FDP.pdf',
-    config=dict(
-        llm=dict(
-            provider="ollama",
-            config=dict(
-                model="crewai-llama3",
-                base_url="http://localhost:11434",  # Adjust the base URL as needed
-            ),
-        ),
-        embedder=dict(
-            provider="ollama",
-            config=dict(
-                model="nomic-embed-text",
-                base_url="http://localhost:11434",  # Adjust the base URL as needed
-            ),
-        ),
-    )
-)
 
-pdf_Gruene = PDFSearchTool(
-    pdf='data/Gruene.pdf',
-    config=dict(
-        llm=dict(
-            provider="ollama",
-            config=dict(
-                model="crewai-llama3",
-                base_url="http://localhost:11434",  # Adjust the base URL as needed
-            ),
-        ),
-        embedder=dict(
-            provider="ollama",
-            config=dict(
-                model="nomic-embed-text",
-                base_url="http://localhost:11434",  # Adjust the base URL as needed
-            ),
-        ),
-    )
-)
-# Function to read PDF content
+# Function to read PDF content and strip non UTF8 characters
 def read_pdf(file_path):
     with open(file_path, 'rb') as f:
         reader = PdfReader(f)
         content = ""
         for page_num in range(len(reader.pages)):
             page = reader.pages[page_num]
-            content += page.extract_text()
+            page_content = page.extract_text()
+            # Strip non UTF8 characters
+            page_content = page_content.encode('utf-8', 'ignore').decode('utf-8')
+            content += page_content
     return content
 
 
@@ -94,39 +68,17 @@ def create_agents(topic):
         llm=model
     )
 
-    cdu_politician = Agent(
-        role='Discussion participant',
-        goal=f'Outline and promote '
-             f'the position of the german political party CDU  on the topic :  {topic}. You can react on the answers of other participants.',
-        backstory="""You are an politician with a strong economic background. You have a degree in law and are member of the german
-        conservative political party CDU. """,
-        verbose=True,
-        allow_delegation=False,
-        tools=[pdf_cdu],  # No specific tools for now
-        llm=model
-    )
-
-    gruene_politician = Agent(
-        role='Discussion participant',
-        goal=f'Outline and promote '
-             f'the position of the german political party "Bündnis 90 die Grünen"  on the topic :  {topic}. You can react on the answers of other participants.',
-        backstory="""You are an politician with a strong ecological background. Your are a convinced environmentalist. """,
-        verbose=True,
-        allow_delegation=False,
-        tools=[pdf_Gruene],
-        llm=model
-    )
-
-    fdp_politician = Agent(
-        role='Discussion participant',
-        goal=f'Outline and promote '
-             f'the position of the german political party "FDP"  on the topic :  {topic}. You can react on the answers of other participants.',
-        backstory="""You are an politician with a strong background in finance and law.""",
-        verbose=True,
-        allow_delegation=False,
-        tools=[pdf_fdp],
-        llm=model
-    )
+    politicans = {}
+    for party in parties:
+        politicans[party] = Agent(
+            role='Discussion participant',
+            goal=f'Outline and promote the position of the german political party {party} on the topic: {topic}. You can react on the answers of other participants.',
+            backstory=f'You are a politician with a strong background in {party}.',
+            verbose=True,
+            allow_delegation=False,
+            tools=[pdf_tools[party]],
+            llm=model
+        )
 
     # Create a task for the teacher to answer questions
     introduction = Task(
@@ -135,49 +87,29 @@ def create_agents(topic):
         expected_output="Introduction and welcome",
         agent=moderator
     )
-    present_cdu_position = Task(
-        description=f"Give a short but precise summary on your opinion on the topic {topic}",
-        expected_output=f"opinion on the topic {topic}",
-        agent=cdu_politician
-    )
+    position_statements = {}
+    for party in parties:
+        position_statements[party] = Task(
+            description=f"Give a short but precise summary on your opinion on the topic {topic}",
+            expected_output=f"opinion on the topic {topic}",
+            agent=politicans[party]
+        )
 
-    present_fdp_position = Task(
-        description=f"Give a short but precise summary on your opinion on the topic {topic}",
-        expected_output=f"opinion on the topic {topic}",
-        agent=fdp_politician
-    )
-
-    present_gruene_position = Task(
-        description=f"Give a short but precise summary on your opinion on the topic {topic}",
-        expected_output=f"opinion on the topic {topic}",
-        agent=gruene_politician
-    )
     summarize = Task(
         description=f"Summarise  the different positions in less than 500 words. And ask the participants on their counter or pro aruments to the different positions",
         expected_output=f"concise summary of the different position",
-
         agent=moderator
     )
-    present_cdu_position_react = Task(
-        description=f"React on the other participants arguments",
-        expected_output=f"concise reaction on the  over positions",
 
-        agent=cdu_politician
-    )
+    reactions = {}
+    for party in parties:
+        reactions[party] = Task(
+            description=f"React on the other participants arguments",
+            expected_output=f"concise reaction on the over positions",
+            agent=politicans[party]
+        )
 
-    present_fdp_position_react = Task(
-        description=f"React on the other participants arguments",
-        expected_output=f"consice reaction on the  over positions",
 
-        agent=fdp_politician
-    )
-
-    present_gruene_position_react= Task(
-        description=f"React on the other participants arguments",
-        expected_output=f"consice reaction on the  over positions",
-
-        agent=gruene_politician
-    )
     conclude_discussion = Task(
         description=f"Summarise  the different positions in less than 500 words. And ask the participants on their counter or pro aruments to the different positions",
         expected_output=f"Verdict on the topic of the discussion and summary of the main positions and their differences.",
@@ -185,7 +117,7 @@ def create_agents(topic):
         agent=moderator
     )
 
-    return [moderator, cdu_politician, fdp_politician, gruene_politician],[introduction,present_fdp_position,present_gruene_position,present_cdu_position,summarize,present_fdp_position_react,present_cdu_position_react,present_gruene_position_react,conclude_discussion]
+    return([moderator] + list(politicans.values()), [introduction] + list(position_statements.values()) + [summarize] + list(reactions.values()) + [conclude_discussion])
 
 
 
@@ -200,3 +132,4 @@ def run_crew(discussion_topic):
     # Run the crew
     result = crew.kickoff()
     return result
+
