@@ -4,4 +4,4 @@ langchain_openai
 streamlit
 PyPDF2
 requests
-embedchain==0.1.103
+embedchain>=0.1.103

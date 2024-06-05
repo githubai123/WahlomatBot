@@ -1,43 +1,25 @@
 from crewai import Agent, Task, Crew
-from crewai_tools import SerperDevTool, PDFSearchTool
 from langchain_openai import ChatOpenAI
+from .rag_tools import HelperTools
+from crewai_tools import SerperDevTool, PDFSearchTool
 from PyPDF2 import PdfReader
-import streamlit as st
-from dotenv import load_dotenv, find_dotenv
+
 
 # Define the language model
 model = ChatOpenAI(model_name="crewai-llama3:8b", temperature=0.7)
 
 # Define tools
-search_tool = SerperDevTool()
+helpers =HelperTools()
+search_tool = helpers.get_serper_search_tool()
 
-def create_pdf_tool(party):
-    pdf_tool = PDFSearchTool(
-        pdf=f'data/{party}.pdf',
-        config=dict(
-            llm=dict(
-                provider="ollama",
-                config=dict(
-                    model="crewai-llama3",
-                    base_url="http://localhost:11434",  # Adjust the base URL as needed
-                ),
-            ),
-            embedder=dict(
-                provider="ollama",
-                config=dict(
-                    model="nomic-embed-text",
-                    base_url="http://localhost:11434",  # Adjust the base URL as needed
-                ),
-            ),
-        )
-    )
-    return pdf_tool
+
 
 pdf_tools = {}
 parties = ["CDU", "FDP"]
 for party in parties:
-    pdf_tools[party] = create_pdf_tool(party)
+    pdf_tools[party] = helpers.get_tool_pdf_rag_party(party)
 
+print(f"Number of tools {len(pdf_tools)}.")
 
 
 # Function to read PDF content and strip non UTF8 characters
