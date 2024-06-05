@@ -1,6 +1,7 @@
 from crewai import Agent, Task, Crew
 from langchain_openai import ChatOpenAI
 from .rag_tools import HelperTools
+from langgraph.graph import StateGraph, END
 from langgraph.graph import END, MessageGraph
 from langchain_core.messages import HumanMessage
 
@@ -13,16 +14,6 @@ search_tool = helpers.get_serper_search_tool()
 
 # define Graph structure to coordinate the discussion
 graph = MessageGraph()
-
-# Add nodes to the graph
-graph.add_node("oracle", model)
-graph.add_edge("oracle", END)
-graph.set_entry_point("oracle")
-
-# Compile the graph
-runnable = graph.compile()
-
-
 
 pdf_tools = {}
 parties = ["CDU", "FDP"]
@@ -41,7 +32,7 @@ print(f"Number of tools {len(pdf_tools)}.")
 
 def create_agents(topic):
     moderator = Agent(
-        role=f'Discussion host on the topic: {topic} ',
+        role=f'Discussion host',
         goal=f'Create a fruitful discussion on the topic: {topic} between members of different political parties and come to a common verdict.',
         backstory=f"""You are an experienced discussion host with deep insight in the topic:  {topic}.
         Your goal is to disect the topic and break down the pros and cons and the outline the different political positions.
@@ -49,9 +40,10 @@ def create_agents(topic):
         to ensure a well balanced discussion.""",
         verbose=True,
         allow_delegation=False,
-        tools=[],
+        tools=[search_tool],
         llm=model
     )
+    graph.add_node("moderator", moderator.llm)
 
     politicans = {}
     for party in parties:
@@ -103,7 +95,16 @@ def create_agents(topic):
 
     return([moderator] + list(politicans.values()), [introduction] + list(position_statements.values()) + [summarize] + list(reactions.values()) + [conclude_discussion])
 
-
+def perform_task_with_tools(agent, task_description, conversation_history):
+    # Use the PDFSearchTool to retrieve relevant information
+    search_results = agent.tools[0].search(task_description)
+    
+    # Combine the backstory and conversation history with the search results
+    context_str = f"Backstory: {agent.backstory}\n\nConversation History:\n{conversation_history}\n\nSearch Results:\n" + "\n".join(search_results)
+    prompt = f"Using the following context, respond to the task: {task_description}\n\nContext:\n{context_str}\n\nResponse:"
+    response = agent.llm.generate(prompt)
+    
+    return response
 
 def run_crew(discussion_topic):
     agents,tasks = create_agents(discussion_topic)
@@ -112,19 +113,30 @@ def run_crew(discussion_topic):
         agents=agents,
         tasks=tasks,
         verbose=2  # Set verbosity level for logging
-    )    
+    )
+    
+
+    conversation_history = ""
+# Run the crew and integrate with LangGraph
     for task in crew.tasks:
-        if task.agent.role == 'Questioner':
-            print(f"Questioner: {task.description}")
-            for responder_task in crew.tasks:
-                if responder_task.agent.role == 'Responder':
-                    response = runnable.invoke(HumanMessage(responder_task.description))
-                    print(f"{responder_task.agent.backstory}: {response}")
-                    # Evaluate the response (this is a simplified example)
-                    if "better argument" in response:  # Placeholder for actual evaluation logic
-                        print(f"Questioner: I am convinced by the {responder_task.agent.backstory}'s argument.")
-                        break
+        if task.agent.role == 'Discussion participant':
+            response = perform_task_with_tools(task.agent, task.description, conversation_history)
+            conversation_history += f"{task.agent.backstory}: {response}\n"
+            print(f"{task.agent.backstory}: {response}")
+        elif task.agent.role == 'Discussion host':
+            # Simplified logic for deciding the winner
+            response1 = perform_task_with_tools(task1.agent, task1.description, conversation_history)
+            response2 = perform_task_with_tools(task2.agent, task2.description, conversation_history)
+            
+            if "better argument" in response1:  # Placeholder for actual evaluation logic
+                print(f"Observer: The advocate had the better arguments.")
+            else:
+                print(f"Observer: The opponent had the better arguments.")
+
+
+
      # Run the crew
-    result = crew.kickoff()
+    
+    #result = crew.kickoff()
     return result
 

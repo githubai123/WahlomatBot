@@ -6,3 +6,6 @@ streamlit
 PyPDF2
 requests
 embedchain>=0.1.103
+graphviz
+pygraphviz
+grandalf
