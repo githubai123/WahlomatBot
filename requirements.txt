@@ -1,6 +1,7 @@
 crewai
 crewai[tools]
 langchain_openai
+langgraph
 streamlit
 PyPDF2
 requests

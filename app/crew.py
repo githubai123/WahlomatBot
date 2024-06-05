@@ -1,7 +1,8 @@
 from crewai import Agent, Task, Crew
 from langchain_openai import ChatOpenAI
 from .rag_tools import HelperTools
-
+from langgraph.graph import END, MessageGraph
+from langchain_core.messages import HumanMessage
 
 # Define the language model
 model = ChatOpenAI(model_name="crewai-llama3:8b", temperature=0.7)
@@ -9,6 +10,17 @@ model = ChatOpenAI(model_name="crewai-llama3:8b", temperature=0.7)
 # Define tools
 helpers =HelperTools()
 search_tool = helpers.get_serper_search_tool()
+
+# define Graph structure to coordinate the discussion
+graph = MessageGraph()
+
+# Add nodes to the graph
+graph.add_node("oracle", model)
+graph.add_edge("oracle", END)
+graph.set_entry_point("oracle")
+
+# Compile the graph
+runnable = graph.compile()
 
 
 
@@ -18,6 +30,11 @@ for party in parties:
     pdf_tools[party] = helpers.get_tool_pdf_rag_party(party)
 
 print(f"Number of tools {len(pdf_tools)}.")
+
+
+
+
+
 
 
 
@@ -32,7 +49,7 @@ def create_agents(topic):
         to ensure a well balanced discussion.""",
         verbose=True,
         allow_delegation=False,
-        tools=[search_tool],
+        tools=[],
         llm=model
     )
 
@@ -72,11 +89,10 @@ def create_agents(topic):
     reactions = {}
     for party in parties:
         reactions[party] = Task(
-            description=f"React on the other participants arguments",
-            expected_output=f"concise reaction on the over positions",
+            description=f"Respond with the {party} politician perspective on {topic}",
+            expected_output=f"A response promoting the {party} politicians arguments reaction and attacking the position of his opponent",
             agent=politicans[party]
         )
-
 
     conclude_discussion = Task(
         description=f"Summarise  the different positions in less than 500 words. And ask the participants on their counter or pro aruments to the different positions",
@@ -96,8 +112,19 @@ def run_crew(discussion_topic):
         agents=agents,
         tasks=tasks,
         verbose=2  # Set verbosity level for logging
-    )
-    # Run the crew
+    )    
+    for task in crew.tasks:
+        if task.agent.role == 'Questioner':
+            print(f"Questioner: {task.description}")
+            for responder_task in crew.tasks:
+                if responder_task.agent.role == 'Responder':
+                    response = runnable.invoke(HumanMessage(responder_task.description))
+                    print(f"{responder_task.agent.backstory}: {response}")
+                    # Evaluate the response (this is a simplified example)
+                    if "better argument" in response:  # Placeholder for actual evaluation logic
+                        print(f"Questioner: I am convinced by the {responder_task.agent.backstory}'s argument.")
+                        break
+     # Run the crew
     result = crew.kickoff()
     return result
 
