@@ -1,5 +1,6 @@
 #
 from crewai_tools import SerperDevTool, PDFSearchTool
+from PyPDF2 import PdfReader
 
 class HelperTools:
     def __init__(self,model_provider_rag_="ollama",model_base_="http://localhost:11434",llm_model_name_="crewai-llama3", embedding_model_="nomic-embed-text", **kwargs):
@@ -40,6 +41,17 @@ class HelperTools:
         return SerperDevTool()
 
     
-        
+    def read_pdf(self,file_path):
+        with open(file_path, 'rb') as f:
+            reader = PdfReader(f)
+            content = ""
+            for page_num in range(len(reader.pages)):
+                page = reader.pages[page_num]
+                page_content = page.extract_text()
+                # Strip non UTF8 characters
+                page_content = page_content.encode('utf-8', 'ignore').decode('utf-8')
+                content += page_content
+        return content
+
 
 

@@ -1,7 +1,6 @@
 from crewai import Agent, Task, Crew
 from langchain_openai import ChatOpenAI
 from .rag_tools import HelperTools
-from PyPDF2 import PdfReader
 
 
 # Define the language model
@@ -21,18 +20,6 @@ for party in parties:
 print(f"Number of tools {len(pdf_tools)}.")
 
 
-# Function to read PDF content and strip non UTF8 characters
-def read_pdf(file_path):
-    with open(file_path, 'rb') as f:
-        reader = PdfReader(f)
-        content = ""
-        for page_num in range(len(reader.pages)):
-            page = reader.pages[page_num]
-            page_content = page.extract_text()
-            # Strip non UTF8 characters
-            page_content = page_content.encode('utf-8', 'ignore').decode('utf-8')
-            content += page_content
-    return content
 
 
 def create_agents(topic):
