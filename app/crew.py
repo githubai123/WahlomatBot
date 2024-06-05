@@ -118,13 +118,23 @@ def run_crew(discussion_topic):
 
     conversation_history = ""
 # Run the crew and integrate with LangGraph
-    for task in crew.tasks:
+# Remove crew kickoff and replace it with own orchestrator logic 
+# Simple cyclic graph structure Introduction (Discussion with argument scores ) -> stop condition -> winner
+# Possibly add presentation part on top 
+# 
+#### Here would be some outer loop over the graph structure 
+## -> got to agent -> perform Tasks with tools -> evaluate response
+
+
+
+"""     for task in crew.tasks:
         if task.agent.role == 'Discussion participant':
             response = perform_task_with_tools(task.agent, task.description, conversation_history)
             conversation_history += f"{task.agent.backstory}: {response}\n"
             print(f"{task.agent.backstory}: {response}")
         elif task.agent.role == 'Discussion host':
-            # Simplified logic for deciding the winner
+            ### todo: This ist still just a placeholder 
+
             response1 = perform_task_with_tools(task1.agent, task1.description, conversation_history)
             response2 = perform_task_with_tools(task2.agent, task2.description, conversation_history)
             
@@ -133,7 +143,7 @@ def run_crew(discussion_topic):
             else:
                 print(f"Observer: The opponent had the better arguments.")
 
-
+ """
 
      # Run the crew
     
