@@ -34,7 +34,7 @@ class MyAdaptiveRagAgent():
             setattr(self, key, value)
         ### create Agent RAG vector store
         self.embedding =OllamaEmbeddings(model=self.embedding_model_)
-        self.vectorstore = Chroma(f"{ self.agent_name_}-memory",self.embedding  )
+        self.vectorstore = Chroma(f"{ self.agent_name_}-memory",self.embedding ,persist_directory="./chroma_db" )
 
         #build components
         self.retriever = self.vectorstore.as_retriever()
@@ -235,6 +235,7 @@ class MyAdaptiveRagAgent():
 
         # Re-write question
         better_question = self.question_rewriter.invoke({"question": question})
+        print(f"better question: {better_question}")
         return {"documents": documents, "question": better_question}
 
 
@@ -253,7 +254,7 @@ class MyAdaptiveRagAgent():
         question = state["question"]
 
         # Web search
-        docs = self.web_search_tool.invoke({"query": question})
+        docs = self.web_search_tool.run( question)
         web_results = "\n".join([d["content"] for d in docs])
         web_results = Document(page_content=web_results)
 
