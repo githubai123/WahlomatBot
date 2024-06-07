@@ -60,10 +60,7 @@ class MyAdaptiveRagAgent():
                 # Strip non UTF8 characters
                 page_content = page_content.encode('utf-8', 'ignore').decode('utf-8')
                 content += page_content
-            text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-            chunk_size=250, chunk_overlap=0)
-            doc_splits = text_splitter.split_documents([content])
-            self.add_to_vector_storage(doc_splits)
+            self.add_to_vector_storage(content)
                        
 
 
