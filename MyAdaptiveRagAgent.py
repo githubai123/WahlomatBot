@@ -402,7 +402,7 @@ class MyAdaptiveRagAgent():
 
         # Run
         inputs = {"question": f"{question}"}
-        for output in app.stream(inputs):
+        for output in self.app.stream(inputs):
             for key, value in output.items():
                 # Node
                 pprint(f"Node '{key}':")
