@@ -257,7 +257,8 @@ class MyAdaptiveRagAgent():
         docs = self.web_search_tool.run( question)
         web_results = "\n".join([d["content"] for d in docs])
         web_results = Document(page_content=web_results)
-
+    
+    ##TODO FIX INDICES FOR WBSEARCH
         return {"documents": web_results, "question": question}
 
 
