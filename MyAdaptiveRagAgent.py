@@ -398,18 +398,18 @@ class MyAdaptiveRagAgent():
 
 
 
-        def generate_answer(self, question):
+    def generate_answer(self, question):
 
-            # Run
-            inputs = {"question": f"{question}"}
-            for output in app.stream(inputs):
-                for key, value in output.items():
-                    # Node
-                    pprint(f"Node '{key}':")
-                    # Optional: print full state at each node
-                    # pprint.pprint(value["keys"], indent=2, width=80, depth=None)
-                pprint("\n---\n")
+        # Run
+        inputs = {"question": f"{question}"}
+        for output in app.stream(inputs):
+            for key, value in output.items():
+                # Node
+                pprint(f"Node '{key}':")
+                # Optional: print full state at each node
+                # pprint.pprint(value["keys"], indent=2, width=80, depth=None)
+            pprint("\n---\n")
 
             # Final generation
-            pprint(value["generation"])
-            return value["generation"]
+        pprint(value["generation"])
+        return value["generation"]
