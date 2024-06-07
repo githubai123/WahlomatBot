@@ -15,6 +15,7 @@ from langchain.schema import Document
 from langgraph.graph import END, StateGraph
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from pprint import pprint
+from PyPDF2 import PdfReader
 
 class MyAdaptiveRagAgent():
 
@@ -61,12 +62,11 @@ class MyAdaptiveRagAgent():
                 content += page_content
             text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
             chunk_size=250, chunk_overlap=0)
-            doc_splits = text_splitter.split_documents(docs_list)
+            doc_splits = text_splitter.split_documents([content])
             self.add_to_vector_storage(doc_splits)
                        
 
 
-    
     def add_to_vector_storage(self,documents):
         self.vectorstore.add_documents(documents)
 
@@ -421,12 +421,3 @@ class MyAdaptiveRagAgent():
             # Final generation
             pprint(value["generation"])
             return value["generation"]
-
-# Compile
-
-urls = [
-    "https://lilianweng.github.io/posts/2023-06-23-agent/",
-    "https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/",
-    "https://lilianweng.github.io/posts/2023-10-25-adv-attack-llm/",
-]
-
