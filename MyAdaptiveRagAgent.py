@@ -72,7 +72,7 @@ class MyAdaptiveRagAgent():
 
 
     def add_web_content_to_rag(self,urls_):
-        docs = [WebBaseLoader(url).load() for url in urls]
+        docs = [WebBaseLoader(url).load() for url in urls_]
         docs_list = [item for sublist in docs for item in sublist]
         text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
             chunk_size=250, chunk_overlap=0)
