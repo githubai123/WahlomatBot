@@ -49,21 +49,21 @@ class MyAdaptiveRagAgent():
         os.environ["SERPER_API_KEY"] = "5fc96a6869c7f573b3c9972f8e291bc507b94494"
         self.web_search_tool = GoogleSerperAPIWrapper()
     
-        def add_pdf(self,file_path):
-            with open(file_path, 'rb') as f:
-                reader = PdfReader(f)
-                content = ""
-                for page_num in range(len(reader.pages)):
-                    page = reader.pages[page_num]
-                    page_content = page.extract_text()
-                    # Strip non UTF8 characters
-                    page_content = page_content.encode('utf-8', 'ignore').decode('utf-8')
-                    content += page_content
-                text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
-                chunk_size=250, chunk_overlap=0)
-                doc_splits = text_splitter.split_documents(docs_list)
-                self.add_to_vector_storage(doc_splits)
-
+    def add_pdf(self,file_path):
+        with open(file_path, 'rb') as f:
+            reader = PdfReader(f)
+            content = ""
+            for page_num in range(len(reader.pages)):
+                page = reader.pages[page_num]
+                page_content = page.extract_text()
+                # Strip non UTF8 characters
+                page_content = page_content.encode('utf-8', 'ignore').decode('utf-8')
+                content += page_content
+            text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+            chunk_size=250, chunk_overlap=0)
+            doc_splits = text_splitter.split_documents(docs_list)
+            self.add_to_vector_storage(doc_splits)
+                       
 
 
     
