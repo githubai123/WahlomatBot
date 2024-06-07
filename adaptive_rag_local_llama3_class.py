@@ -41,11 +41,28 @@ class MyAdaptiveRagAgent():
         self.rag_chain = self.create_rag_prompt_chain()
         self.hallucination_grader = self.create_hallucination_grader()
         self.answer_grader = self.create_answer_grader()
-        self.rewriter = self.create_re_writer()
+        self.question_rewriter = self.create_re_writer()
 
         os.environ["SERPER_API_KEY"] = "5fc96a6869c7f573b3c9972f8e291bc507b94494"
         self.web_search_tool = GoogleSerperAPIWrapper()
     
+        def add_pdf(self,file_path):
+            with open(file_path, 'rb') as f:
+                reader = PdfReader(f)
+                content = ""
+                for page_num in range(len(reader.pages)):
+                    page = reader.pages[page_num]
+                    page_content = page.extract_text()
+                    # Strip non UTF8 characters
+                    page_content = page_content.encode('utf-8', 'ignore').decode('utf-8')
+                    content += page_content
+                text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
+                chunk_size=250, chunk_overlap=0)
+                doc_splits = text_splitter.split_documents(docs_list)
+                self.add_to_vector_storage(doc_splits)
+
+
+
     
     def add_to_vector_storage(self,documents):
         self.vectorstore.add_documents(documents)
@@ -391,14 +408,17 @@ urls = [
     "https://lilianweng.github.io/posts/2023-03-15-prompt-engineering/",
     "https://lilianweng.github.io/posts/2023-10-25-adv-attack-llm/",
 ]
+
+
 Smarty = MyAdaptiveRagAgent()
 Smarty.add_web_content_to_rag(urls)
+Smarty.add_pdf("dat/CDU.pdf")
 app = Smarty.build_graph()
 
 from pprint import pprint
 
 # Run
-inputs = {"question": "What is the AlphaCodium paper about?"}
+inputs = {"question": "Was bedeutet CDU?"}
 for output in app.stream(inputs):
     for key, value in output.items():
         # Node
