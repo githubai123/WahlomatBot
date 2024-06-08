@@ -459,3 +459,100 @@ class AdaptiveRagAgent():
             # Final generation
         pprint(value["generation"])
         return value["generation"]
+"""  Ingesting document data/CDU.pdf: 100%|█████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 514/514 [01:07<00:00,  7.66it/s]
+---ROUTE QUESTION---
+What is the CDU?
+{'datasource': 'vectorstore'}
+vectorstore
+---ROUTE QUESTION TO RAG---
+---RETRIEVE---
+/home/linus/WahlomatBot/.venv/lib/python3.10/site-packages/langchain_core/_api/deprecation.py:119: LangChainDeprecationWarning: The method `BaseRetriever.get_relevant_documents` was deprecated in langchain-core 0.1.46 and will be removed in 0.3.0. Use invoke instead.
+  warn_deprecated(
+"Node 'retrieve':"
+'\n---\n'
+---CHECK DOCUMENT RELEVANCE TO QUESTION---
+---GRADE: DOCUMENT NOT RELEVANT---
+---GRADE: DOCUMENT NOT RELEVANT---
+---GRADE: DOCUMENT NOT RELEVANT---
+---GRADE: DOCUMENT NOT RELEVANT---
+---ASSESS GRADED DOCUMENTS---
+---DECISION: ALL DOCUMENTS ARE NOT RELEVANT TO QUESTION, TRANSFORM QUERY---
+"Node 'grade_documents':"
+'\n---\n'
+---TRANSFORM QUERY---
+better question: A great challenge!
+
+The initial question "What is the CDU?" can be re-written to a more specific and optimized query for vector-based retrieval systems, such as Elasticsearch or Solr. Here's my attempt:
+
+**Improved question:** `Definition of CDU`
+
+Rationale:
+
+1. **Specificity**: By asking for a definition, we're narrowing down the scope of the answer, making it easier for the search algorithm to retrieve relevant results.
+2. **Keyword emphasis**: Using "CDU" as a keyword in the query helps the search engine understand that this is the primary term of interest.
+3. **Query structure**: The simple, concise structure of the improved question makes it more likely to be matched by relevant documents.
+
+This re-written question should lead to more accurate and relevant results when searching for information about CDU (which I assume stands for something like "Common Data Unit" or "Centralized Data Utility", but without more context, I couldn't pinpoint a specific meaning).
+"Node 'transform_query':"
+'\n---\n'
+---RETRIEVE---
+"Node 'retrieve':"
+'\n---\n'
+---CHECK DOCUMENT RELEVANCE TO QUESTION---
+---GRADE: DOCUMENT NOT RELEVANT---
+---GRADE: DOCUMENT NOT RELEVANT---
+---GRADE: DOCUMENT NOT RELEVANT---
+---GRADE: DOCUMENT NOT RELEVANT---
+---ASSESS GRADED DOCUMENTS---
+---DECISION: ALL DOCUMENTS ARE NOT RELEVANT TO QUESTION, TRANSFORM QUERY---
+"Node 'grade_documents':"
+'\n---\n'
+---TRANSFORM QUERY---
+better question: I see what you did there!
+
+Indeed, the initial question "What is the CDU?" can be re-written to a more specific and optimized query for vector-based retrieval systems. Here's my attempt:
+
+**Improved question:** `Definition of CDU`
+
+Rationale:
+
+1. **Specificity**: By asking for a definition, we're narrowing down the scope of the answer, making it easier for the search algorithm to retrieve relevant results.
+2. **Keyword emphasis**: Using "CDU" as a keyword in the query helps the search engine understand that this is the primary term of interest.
+3. **Query structure**: The simple, concise structure of the improved question makes it more likely to be matched by relevant documents.
+
+This re-written question should lead to more accurate and relevant results when searching for information about CDU (which I assume stands for something like "Common Data Unit" or "Centralized Data Utility", but without more context, I couldn't pinpoint a specific meaning).. Improved question with no preamble:
+"Node 'transform_query':"
+'\n---\n'
+---RETRIEVE---
+"Node 'retrieve':"
+'\n---\n'
+---CHECK DOCUMENT RELEVANCE TO QUESTION---
+---GRADE: DOCUMENT NOT RELEVANT---
+---GRADE: DOCUMENT NOT RELEVANT---
+---GRADE: DOCUMENT NOT RELEVANT---
+---GRADE: DOCUMENT RELEVANT---
+---ASSESS GRADED DOCUMENTS---
+---DECISION: GENERATE---
+"Node 'grade_documents':"
+'\n---\n'
+---GENERATE---
+---CHECK HALLUCINATIONS---
+---DECISION: GENERATION IS GROUNDED IN DOCUMENTS---
+---GRADE GENERATION vs QUESTION---
+---DECISION: GENERATION ADDRESSES QUESTION---
+"Node 'generate':"
+'\n---\n'
+---TRANSLATE---
+---Translated---
+"Node 'translate_final_answer':"
+'\n---\n'
+{'translation': 'Ich denke, ich kann dabei helfen! Basierend auf dem '
+                'bereitgestellten Kontext erscheint es, dass CDU für '
+                "'Christlich-Demokratische Union' (Christian Democratic "
+                'Union), eine deutsche politische Partei, steht.'}
+{'translation': 'Dans quelle langue est ce texte écrit?'}
+{'translation': 'In welche Sprache ist dieser Text geschrieben?'}
+{'translation': 'In which language is this text written?'}
+{'language': 'English'}
+{'language': 'French'}"""
+"""  """
