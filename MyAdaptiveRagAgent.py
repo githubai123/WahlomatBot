@@ -16,6 +16,7 @@ from langgraph.graph import END, StateGraph
 from langchain_community.utilities import GoogleSerperAPIWrapper
 from pprint import pprint
 from langchain_community.document_loaders import PyMuPDFLoader
+from tqdm import tqdm
 
 class MyAdaptiveRagAgent():
 
@@ -57,7 +58,10 @@ class MyAdaptiveRagAgent():
         documents = pdf_loader.load()    
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         split_documents = text_splitter.split_documents(documents)
-        self.vectorstore.add_documents(documents)
+        with tqdm(total=len(split_documents), desc="Ingesting documents") as pbar:
+            for d in split_documents:
+                self.vectorstore.add_documents([d])#
+                pbar.update(1)  
                        
 
 
@@ -72,7 +76,7 @@ class MyAdaptiveRagAgent():
             chunk_size=250, chunk_overlap=0)
         doc_splits = text_splitter.split_documents(docs_list)
         self.add_to_vector_storage(doc_splits)
-        
+
     def create_translator(self):
         self.llm_router = ChatOllama(model=self.llm_model_name_, format="json", temperature=0)
         prompt = PromptTemplate(

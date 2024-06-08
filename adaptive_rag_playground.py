@@ -6,11 +6,11 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 Smarty = MyAdaptiveRagAgent.MyAdaptiveRagAgent()
 
 
-if (False):
-    urls = [
-        "https://www.cdu.de/ueber-uns/geschichte-der-cdu",
-    ]
-    Smarty.add_web_content_to_rag(urls)
+if (True):
+    #urls = [
+     #   "https://www.cdu.de/ueber-uns/geschichte-der-cdu",
+    #]
+   # Smarty.add_web_content_to_rag(urls)
     Smarty.add_pdf("data/CDU.pdf")
     Smarty.generate_answer("What is the CDU?")
 
@@ -76,8 +76,7 @@ if (False):
 
 text_sample =  "In welcher Sprache ist dieser Text geschrieben?"
 
-score = Smarty.language_determinator.invoke(
-                {"document": text_sample})
+score = Smarty.language_determinator.invoke({"document": text_sample})
 # 
 translation = Smarty.translator.invoke({"language":"French","text":text_sample})
 print(translation)
