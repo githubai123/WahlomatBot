@@ -1,4 +1,5 @@
-import MyAdaptiveRagAgent
+import AdaptiveRagAgent
+from PoliticianAgent import PoliticianAgent
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -6,20 +7,23 @@ from langchain_community.document_loaders import UnstructuredExcelLoader
 import pandas as pd
 
 ##### Lose test script for individual components 
-
-
+# Test new derived class 
+#documents = ["data/CDU.pdf","data/FDP.pdf","data/Gruene.pdf"]
+#bob = PoliticianAgent("bob", documents)
+#
+#exit(0)
 
 ##################      Get Data from Wahlomat          ################
 ########################################################################
+#if(False):
+ #   dataset_questions_file = "data/wahlomat_official_2024.xlsx"
+ #   df = pd.read_excel(dataset_questions_file, sheet_name="Datensatz EU 2024", usecols='B,F,G,H',skiprows=0)
+ #   unique_list = list(set(df["These: These"]))
 
-dataset_questions_file = "data/wahlomat_official_2024.xlsx"
-df = pd.read_excel(dataset_questions_file, sheet_name="Datensatz EU 2024", usecols='B,F,G,H',skiprows=0)
-unique_list = list(set(df["These: These"]))
-
-###### Check Licence
-print ("Fragen des WahlOmats:")
-for id,Frage in enumerate(unique_list):
-    print("{}: {}".format(id,Frage))
+ #   ###### Check Licence
+ #   print ("Fragen des WahlOmats:")
+ #   for id,Frage in enumerate(unique_list):
+ #       print("{}: {}".format(id,Frage))
 
 # Code to get the reference 
 
@@ -31,7 +35,7 @@ for id,Frage in enumerate(unique_list):
 
 
 ########################################################################
-Smarty = MyAdaptiveRagAgent.MyAdaptiveRagAgent()
+Smarty = AdaptiveRagAgent.AdaptiveRagAgent()
 
 
 
@@ -117,7 +121,6 @@ print(translation)
 ####Language Determinator
 score = Smarty.language_determinator.invoke(
                 {"document": "What is this language?"})
-
 
 
 print(score)

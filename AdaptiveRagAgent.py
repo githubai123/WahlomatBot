@@ -18,7 +18,7 @@ from pprint import pprint
 from langchain_community.document_loaders import PyMuPDFLoader
 from tqdm import tqdm
 
-class MyAdaptiveRagAgent():
+class AdaptiveRagAgent():
 
     class GraphState(TypedDict):
         question: str
@@ -218,6 +218,15 @@ class MyAdaptiveRagAgent():
         generation = self.rag_chain.invoke({"context": documents, "question": question})
         return {"documents": documents, "question": question, "generation": generation}
 
+    def translate_final_answer(self,state):
+        print("---TRANSLATE---")
+        generation = state["generation"]
+
+        # RAG generation
+        generation = self.translator.invoke({"language":"German","text":generation})
+        print("---Translated---")
+        return {"generation": generation}
+
 
     def grade_documents(self,state):
         """
@@ -399,6 +408,7 @@ class MyAdaptiveRagAgent():
         workflow.add_node("grade_documents", self.grade_documents)  # grade documents
         workflow.add_node("generate", self.generate)  # generatae
         workflow.add_node("transform_query", self.transform_query)  # transform_query
+        workflow.add_node("translate_final_answer", self.translate_final_answer)  # transform_query
 
         # Build graph
         workflow.set_conditional_entry_point(
@@ -424,10 +434,12 @@ class MyAdaptiveRagAgent():
             self.grade_generation_v_documents_and_question,
             {
                 "not supported": "generate",
-                "useful": END,
+                "useful": "translate_final_answer",
                 "not useful": "transform_query",
             },
         )
+        workflow.add_edge("translate_final_answer", END)
+
         return workflow.compile()
 
 
