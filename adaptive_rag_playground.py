@@ -4,6 +4,11 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from langchain_community.document_loaders import UnstructuredExcelLoader
 import pandas as pd
+
+##### Lose test script for individual components 
+
+
+
 ##################      Get Data from Wahlomat          ################
 ########################################################################
 
@@ -16,6 +21,13 @@ print ("Fragen des WahlOmats:")
 for id,Frage in enumerate(unique_list):
     print("{}: {}".format(id,Frage))
 
+# Code to get the reference 
+
+##  Masterplan take MyAdaptiveRagAgent as base class and build a specialized politcian bot on top 
+#   
+#
+#
+#
 
 
 ########################################################################
