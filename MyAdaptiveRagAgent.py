@@ -44,6 +44,7 @@ class MyAdaptiveRagAgent():
         self.hallucination_grader = self.create_hallucination_grader()
         self.answer_grader = self.create_answer_grader()
         self.question_rewriter = self.create_re_writer()
+        self.language_determinator =self.create_language_determinator()
         self.app = self.build_graph()
 
 
@@ -70,6 +71,18 @@ class MyAdaptiveRagAgent():
             chunk_size=250, chunk_overlap=0)
         doc_splits = text_splitter.split_documents(docs_list)
         self.add_to_vector_storage(doc_splits)
+
+    def create_language_determinator(self):
+        self.llm_router = ChatOllama(model=self.llm_model_name_, format="json", temperature=0)
+        prompt = PromptTemplate(
+            template="""You are an expert at determining the language of provided given document. \n
+            Choose a single best answer from the following list of languages: 'German', 'English','French' \n
+            Return the a JSON with a single key 'language' and no premable or explanation. \n
+            Document to inspect: {document}""",
+            input_variables=["document"],
+        )
+        return prompt | self.llm_router | JsonOutputParser()
+
 
     def create_router(self):
         self.llm_router = ChatOllama(model=self.llm_model_name_, format="json", temperature=0)
