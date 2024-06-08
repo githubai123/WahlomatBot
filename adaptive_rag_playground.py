@@ -2,8 +2,25 @@ import MyAdaptiveRagAgent
 from langchain_community.document_loaders import PyMuPDFLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
+from langchain_community.document_loaders import UnstructuredExcelLoader
+import pandas as pd
+##################      Get Data from Wahlomat          ################
+########################################################################
+
+dataset_questions_file = "data/wahlomat_official_2024.xlsx"
+df = pd.read_excel(dataset_questions_file, sheet_name="Datensatz EU 2024", usecols='B,F,G,H',skiprows=0)
+unique_list = list(set(df["These: These"]))
+
+###### Check 
+print ("Fragen des WahlOmats:")
+for id,Frage in enumerate(unique_list):
+    print("{}: {}".format(id,Frage))
+
+
+
 ########################################################################
 Smarty = MyAdaptiveRagAgent.MyAdaptiveRagAgent()
+
 
 
 if (True):

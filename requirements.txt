@@ -9,3 +9,6 @@ embedchain>=0.1.103
 graphviz
 pygraphviz
 grandalf
+unstructured
+networkx
+openpyxl

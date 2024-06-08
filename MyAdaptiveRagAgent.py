@@ -62,7 +62,7 @@ class MyAdaptiveRagAgent():
             split_documents = text_splitter.split_documents(documents)
             with tqdm(total=len(split_documents), desc=f"Ingesting document {doc}: ") as pbar:
                 for d in split_documents:
-                    self.vectorstore.add_documsents([d])#
+                    self.vectorstore.add_documents([d])
                     pbar.update(1)  
                        
 
