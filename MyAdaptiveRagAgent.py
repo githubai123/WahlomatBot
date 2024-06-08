@@ -45,6 +45,7 @@ class MyAdaptiveRagAgent():
         self.answer_grader = self.create_answer_grader()
         self.question_rewriter = self.create_re_writer()
         self.language_determinator =self.create_language_determinator()
+        self.translator = self.create_translator()
         self.app = self.build_graph()
 
 
@@ -71,6 +72,18 @@ class MyAdaptiveRagAgent():
             chunk_size=250, chunk_overlap=0)
         doc_splits = text_splitter.split_documents(docs_list)
         self.add_to_vector_storage(doc_splits)
+        
+    def create_translator(self):
+        self.llm_router = ChatOllama(model=self.llm_model_name_, format="json", temperature=0)
+        prompt = PromptTemplate(
+                template="""Translate the following text to {language}: {text}
+                Return the a JSON with a single key 'translation' and no premable or explanation. \n
+                """,
+                input_variables=["language","text"],
+         )
+        return prompt | self.llm_router | JsonOutputParser()
+
+
 
     def create_language_determinator(self):
         self.llm_router = ChatOllama(model=self.llm_model_name_, format="json", temperature=0)
