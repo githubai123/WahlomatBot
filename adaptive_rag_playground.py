@@ -11,7 +11,7 @@ dataset_questions_file = "data/wahlomat_official_2024.xlsx"
 df = pd.read_excel(dataset_questions_file, sheet_name="Datensatz EU 2024", usecols='B,F,G,H',skiprows=0)
 unique_list = list(set(df["These: These"]))
 
-###### Check 
+###### Check Licence
 print ("Fragen des WahlOmats:")
 for id,Frage in enumerate(unique_list):
     print("{}: {}".format(id,Frage))
@@ -31,7 +31,7 @@ if (True):
     Smarty.add_pdf(["data/CDU.pdf"])
     Smarty.generate_answer("What is the CDU?")
 
-'\n---\n'
+#'\n---\n'
 # ---RETRIEVE---
 # "Node 'retrieve':"
 # '\n---\n'
