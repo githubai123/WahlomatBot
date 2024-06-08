@@ -86,7 +86,7 @@ print(translation)
 translation = Smarty.translator.invoke({"language":"English","text":translation})
 print(translation)
 
-
+####Language Determinator
 score = Smarty.language_determinator.invoke(
                 {"document": "What is this language?"})
 
