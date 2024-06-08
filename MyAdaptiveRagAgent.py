@@ -53,15 +53,16 @@ class MyAdaptiveRagAgent():
         os.environ["SERPER_API_KEY"] = "5fc96a6869c7f573b3c9972f8e291bc507b94494"
         self.web_search_tool = GoogleSerperAPIWrapper()
     
-    def add_pdf(self,file_path):
-        pdf_loader = PyMuPDFLoader(file_path)
-        documents = pdf_loader.load()    
-        text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
-        split_documents = text_splitter.split_documents(documents)
-        with tqdm(total=len(split_documents), desc=f"Ingesting document {file_path}: ") as pbar:
-            for d in split_documents:
-                self.vectorstore.add_documents([d])#
-                pbar.update(1)  
+    def add_pdf(self,file_paths):
+        for doc in file_paths:
+            pdf_loader = PyMuPDFLoader(documents)
+            documents = pdf_loader.load()    
+            text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+            split_documents = text_splitter.split_documents(documents)
+            with tqdm(total=len(split_documents), desc=f"Ingesting document {doc}: ") as pbar:
+                for d in split_documents:
+                    self.vectorstore.add_documents([d])#
+                    pbar.update(1)  
                        
 
 
