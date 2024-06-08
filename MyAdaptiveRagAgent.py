@@ -58,7 +58,7 @@ class MyAdaptiveRagAgent():
         documents = pdf_loader.load()    
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
         split_documents = text_splitter.split_documents(documents)
-        with tqdm(total=len(split_documents), desc="Ingesting documents") as pbar:
+        with tqdm(total=len(split_documents), desc=f"Ingesting document {file_path}: ") as pbar:
             for d in split_documents:
                 self.vectorstore.add_documents([d])#
                 pbar.update(1)  
