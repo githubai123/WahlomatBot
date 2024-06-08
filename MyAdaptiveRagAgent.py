@@ -54,6 +54,7 @@ class MyAdaptiveRagAgent():
         self.web_search_tool = GoogleSerperAPIWrapper()
     
     def add_pdf(self,file_paths):
+        ## TODO: add persistence mode based on unique ids 
         for doc in file_paths:
             pdf_loader = PyMuPDFLoader(doc)
             documents = pdf_loader.load()    
@@ -61,7 +62,7 @@ class MyAdaptiveRagAgent():
             split_documents = text_splitter.split_documents(documents)
             with tqdm(total=len(split_documents), desc=f"Ingesting document {doc}: ") as pbar:
                 for d in split_documents:
-                    self.vectorstore.add_documents([d])#
+                    self.vectorstore.add_documsents([d])#
                     pbar.update(1)  
                        
 
