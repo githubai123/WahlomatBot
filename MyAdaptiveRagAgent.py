@@ -88,12 +88,12 @@ class MyAdaptiveRagAgent():
         self.llm_router = ChatOllama(model=self.llm_model_name_, format="json", temperature=0)
         prompt = PromptTemplate(
             template="""You are an expert at routing a user question to a vectorstore or web search. \n
-            Use the vectorstore for questions on LLM  agents, prompt engineering, and adversarial attacks. \n
+            Use the vectorstore for questions on {question}. \n
             You do not need to be stringent with the keywords in the question related to these topics. \n
             Otherwise, use web-search. Give a binary choice 'web_search' or 'vectorstore' based on the question. \n
             Return the a JSON with a single key 'datasource' and no premable or explanation. \n
             Question to route: {question}""",
-            input_variables=["question"],
+            input_variables=["question","topic"],
         )
         return prompt | self.llm_router | JsonOutputParser()
 
