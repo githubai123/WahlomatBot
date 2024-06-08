@@ -55,7 +55,7 @@ class MyAdaptiveRagAgent():
     
     def add_pdf(self,file_paths):
         for doc in file_paths:
-            pdf_loader = PyMuPDFLoader(documents)
+            pdf_loader = PyMuPDFLoader(doc)
             documents = pdf_loader.load()    
             text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
             split_documents = text_splitter.split_documents(documents)
