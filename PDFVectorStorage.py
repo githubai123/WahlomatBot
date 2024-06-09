@@ -59,13 +59,14 @@ class PDFVectorStorage:
             )
 
     def retrieve_similar(self, query, top_k=4):
-        results = self.collection.query(query_texts=[query], n_results=top_k)
+        query_embedding = self.embedding_func.embedding_func.embed_query(query)
+        results = self.collection.query(query_embeddings=[query_embedding], n_results=top_k)
         return results
 
 # Usage example
 if __name__ == "__main__":
-    storage = PDFVectorStorage(storage_path="./chroma_data", model_name="nomic-embed-text")
+    storage = PDFVectorStorage(storage_path="./chroma_data", model_name="mxbai-embed-large")
     storage.add_pdf("./data/CDU.pdf")
-    results = storage.retrieve_similar("Sinne")
+    results = storage.retrieve_similar("Europa")
     for result in results['documents'][0]:
         print(result)
