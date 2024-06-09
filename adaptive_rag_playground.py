@@ -15,23 +15,20 @@ import pandas as pd
 
 ##################      Get Data from Wahlomat          ################
 ########################################################################
-#if(False):
- #   dataset_questions_file = "data/wahlomat_official_2024.xlsx"
- #   df = pd.read_excel(dataset_questions_file, sheet_name="Datensatz EU 2024", usecols='B,F,G,H',skiprows=0)
- #   unique_list = list(set(df["These: These"]))
+#if(False):#
+dataset_questions_file = "data/wahlomat_official_2024.xlsx"
+df = pd.read_excel(dataset_questions_file, sheet_name="Datensatz EU 2024", usecols='B,F,G,H',skiprows=0)
+unique_list = list(set(df["These: These"]))
+filtered_df = df[df['Partei: Kurzbezeichnung'] == "CDU / CSU"]
+pd.set_option('display.max_rows', None)
+pd.set_option('display.max_columns', None)
+print(filtered_df)
+   ###### Check Licence
+print ("Fragen des WahlOmats:")
+for id,Frage in enumerate(unique_list):
+    print("{}: {}".format(id,Frage))
 
- #   ###### Check Licence
- #   print ("Fragen des WahlOmats:")
- #   for id,Frage in enumerate(unique_list):
- #       print("{}: {}".format(id,Frage))
 
-# Code to get the reference 
-
-##  Masterplan take MyAdaptiveRagAgent as base class and build a specialized politcian bot on top 
-#   
-#
-#
-#
 
 
 ########################################################################
@@ -45,7 +42,8 @@ if (True):
     #]
    # Smarty.add_web_content_to_rag(urls)
     Smarty.add_pdf(["data/CDU.pdf"])
-    Smarty.generate_answer("What is the CDU?")
+    question = "was ist die Position der CDU zur These : Die EU soll Atomkraft weiterhin als nachhaltige Energiequelle einstufen." #Smarty.translator.invoke({"text":"was ist die Position der CDU zur These : Die EU soll Atomkraft weiterhin als nachhaltige Energiequelle einstufen. ?","language":"English"})
+    Smarty.generate_answer("question")
 
 #'\n---\n'
 # ---RETRIEVE---

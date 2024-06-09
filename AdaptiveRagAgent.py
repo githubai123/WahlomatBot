@@ -196,6 +196,9 @@ class AdaptiveRagAgent():
         question = state["question"]
 
         # Retrieval
+
+        question = self.translator.invoke({"language":"German","text":question})
+
         documents = self.retriever.get_relevant_documents(question)
         return {"documents": documents, "question": question}
 
@@ -375,8 +378,10 @@ class AdaptiveRagAgent():
         documents = state["documents"]
         generation = state["generation"]
 
+        generation_score = self.translator.invoke({"text":question ,"language":"German"})
+        print(generation_score)
         score = self.hallucination_grader.invoke(
-            {"documents": documents, "generation": generation}
+            {"documents": documents, "generation": generation_score}
         )
         grade = score["score"]
 
@@ -426,7 +431,7 @@ class AdaptiveRagAgent():
             {
                 "transform_query": "transform_query",
                 "generate": "generate",
-            },
+            },  
         )
         workflow.add_edge("transform_query", "retrieve")
         workflow.add_conditional_edges(
@@ -445,7 +450,9 @@ class AdaptiveRagAgent():
 
 
     def generate_answer(self, question):
-
+        graph_image = self.app.get_graph()
+        print(type(graph_image))
+        graph_image.draw_png("rag_agent.png")
         # Run
         inputs = {"question": f"{question}"}
         for output in self.app.stream(inputs):
