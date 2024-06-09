@@ -4,5 +4,15 @@ __pycache__
 
 db/*
 chroma_db
+chroma_data/*
 -db/chroma.sqlite3
 __pycache__/MyAdaptiveRagAgent.cpython-310.pyc
+data/*
+choma*
+db/chroma.sqlite3
+db/21befb0a-bed1-466d-88bf-7a9d14956379/data_level0.bin
+db/21befb0a-bed1-466d-88bf-7a9d14956379/header.bin
+db/21befb0a-bed1-466d-88bf-7a9d14956379/index_metadata.pickle
+db/21befb0a-bed1-466d-88bf-7a9d14956379/length.bin
+db/21befb0a-bed1-466d-88bf-7a9d14956379/link_lists.bin
+db/*
